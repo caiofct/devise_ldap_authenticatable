@@ -36,7 +36,6 @@ module Devise
       end
 
       def self.update_own_password(login, new_password, current_password)
-        debugger
         set_ldap_param(login, :unicodePwd, ::Devise.ldap_auth_password_builder.call(new_password), current_password)
       end
 
