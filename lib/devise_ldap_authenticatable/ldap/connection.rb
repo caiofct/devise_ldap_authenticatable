@@ -126,7 +126,7 @@ module Devise
       end
 
       def change_password!
-        update_ldap(:userPassword => ::Devise.ldap_auth_password_builder.call(@new_password))
+        update_ldap(:unicodePwd => @new_password)
       end
 
       def in_required_groups?
@@ -281,8 +281,13 @@ module Devise
           privileged_ldap = self.ldap
         end
 
-        DeviseLdapAuthenticatable::Logger.send("Modifying user #{dn}")
+        if !operations.blank? && operations.first[1] == :unicodePwd
+          encoded_pwd = ('"'+operations.first[2]+'"').encode("utf-16le").force_encoding("utf-8")
+          operations.first[2] = encoded_pwd
+        end
+
         privileged_ldap.modify(:dn => dn, :operations => operations)
+        DeviseLdapAuthenticatable::Logger.send("Modifying user #{dn}")
       end
     end
   end
