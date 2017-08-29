@@ -11,7 +11,9 @@ module Devise
         end
         ldap_options = params
         ldap_config["ssl"] = :simple_tls if ldap_config["ssl"] === true
-        ldap_options[:encryption] = ldap_config["ssl"].to_sym if ldap_config["ssl"]
+        if ldap_config["ssl"]
+          ldap_options[:encryption] = { method: :simple_tls, tls_options: { :verify_mode => OpenSSL::SSL::VERIFY_NONE }}
+        end
 
         @ldap = Net::LDAP.new(ldap_options)
         @ldap.host = ldap_config["host"]
