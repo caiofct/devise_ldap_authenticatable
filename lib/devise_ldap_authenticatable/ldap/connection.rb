@@ -287,7 +287,6 @@ module Devise
           encoded_pwd = ('"'+operations.first[2]+'"').encode("utf-16le").force_encoding("utf-8")
           operations.first[2] = encoded_pwd
         end
-
         privileged_ldap.modify(:dn => dn, :operations => operations)
         DeviseLdapAuthenticatable::Logger.send("Modifying user #{dn}")
       end

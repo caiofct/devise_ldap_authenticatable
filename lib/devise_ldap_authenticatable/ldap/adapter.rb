@@ -35,6 +35,15 @@ module Devise
         resource.change_password! if new_password.present?
       end
 
+      def self.set_ldap_param(login, param, new_value, password = nil)
+        options = {:login => login,
+                   :ldap_auth_username_builder => ::Devise.ldap_auth_username_builder,
+                   :admin => ::Devise.ldap_use_admin_to_bind}
+
+        resource = Devise::LDAP::Connection.new(options)
+        resource.set_param(param, new_value)
+      end
+
       def self.update_own_password(login, new_password, current_password)
         set_ldap_param(login, :unicodePwd, ::Devise.ldap_auth_password_builder.call(new_password), current_password)
       end
@@ -63,14 +72,7 @@ module Devise
         self.ldap_connect(login).dn
       end
 
-      def self.set_ldap_param(login, param, new_value, password = nil)
-        options = {:login => login,
-                   :ldap_auth_username_builder => ::Devise.ldap_auth_username_builder,
-                   :password => password }
 
-        resource = Devise::LDAP::Connection.new(options)
-        resource.set_param(param, new_value)
-      end
 
       def self.delete_ldap_param(login, param, password = nil)
         options = {:login => login,
